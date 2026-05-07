@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+}
+
+model Venue {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  accentColor String    @default("#7c3aed")
+  isActive    Boolean   @default(true)
+  order       Int       @default(0)
+  sessions    Session[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Session {
+  id               String   @id @default(cuid())
+  venueId          String
+  venue            Venue    @relation(fields: [venueId], references: [id])
+  title            String
+  speaker          String?
+  startAt          DateTime
+  endAt            DateTime
+  slides           Slide[]
+  ads              Ad[]
+  broadcastEnabled Boolean  @default(false)
+  broadcastPage    Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Slide {
+  id        String   @id @default(cuid())
+  sessionId String
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  s3Key     String
+  order     Int
+  createdAt DateTime @default(now())
+}
+
+model Ad {
+  id        String   @id @default(cuid())
+  sessionId String
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  s3Key     String
+  linkUrl   String
+  createdAt DateTime @default(now())
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  content   String   @default("")
+  enabled   Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+}

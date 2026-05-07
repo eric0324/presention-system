@@ -1,0 +1,24 @@
+[Unit]
+Description=Presentation System (Next.js)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/presentation-system
+# standalone 模式輸出在 .next/standalone
+ExecStart=/usr/bin/node .next/standalone/server.js
+Restart=always
+RestartSec=5
+
+# 環境變數（或改用 EnvironmentFile 讀取 .env）
+EnvironmentFile=/var/www/presentation-system/.env
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=0.0.0.0
+
+# 資源限制
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
