@@ -19,7 +19,8 @@ export default async function HomePage() {
 
   const now = new Date()
 
-  const venuesWithStatus = venues.map((venue) => {
+  type VenueItem = typeof venues[number]
+  const venuesWithStatus = venues.map((venue: VenueItem) => {
     const active = venue.sessions.find(
       (s) => getSessionStatus(s.startAt, s.endAt, now) === "active"
     )

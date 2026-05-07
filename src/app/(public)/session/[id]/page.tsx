@@ -31,12 +31,14 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
     redirect("/")
   }
 
-  const slideIds = session.slides.map((s) => s.id)
+  const slideIds = session.slides.map((s: { id: string }) => s.id)
 
+  type VenueWithSessions = typeof allVenues[number]
+  type SessionItem = VenueWithSessions["sessions"][number]
   // 每個場地找出 active 或 next session 的 id（沒有就給 null，前台改連首頁）
-  const venueSwitcher = allVenues.map((v) => {
-    const active = v.sessions.find((s) => getSessionStatus(s.startAt, s.endAt, now) === "active")
-    const next = v.sessions.find((s) => getSessionStatus(s.startAt, s.endAt, now) === "not_started")
+  const venueSwitcher = allVenues.map((v: VenueWithSessions) => {
+    const active = v.sessions.find((s: SessionItem) => getSessionStatus(s.startAt, s.endAt, now) === "active")
+    const next = v.sessions.find((s: SessionItem) => getSessionStatus(s.startAt, s.endAt, now) === "not_started")
     const target = active ?? next ?? null
     return {
       id: v.id,
