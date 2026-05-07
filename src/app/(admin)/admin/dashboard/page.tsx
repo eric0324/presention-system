@@ -19,11 +19,12 @@ export default async function DashboardPage() {
   ])
 
   const now = new Date()
+  type SessionItem = typeof allSessions[number]
   const active = allSessions.filter(
-    (s) => getSessionStatus(s.startAt, s.endAt, now) === "active"
+    (s: SessionItem) => getSessionStatus(s.startAt, s.endAt, now) === "active"
   )
   const upcoming = allSessions.filter(
-    (s) => getSessionStatus(s.startAt, s.endAt, now) === "not_started"
+    (s: SessionItem) => getSessionStatus(s.startAt, s.endAt, now) === "not_started"
   )
 
   return (
