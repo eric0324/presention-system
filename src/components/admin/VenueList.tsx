@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
-import { Plus, ChevronRight } from "lucide-react"
+import { Plus, ChevronRight, Trash2 } from "lucide-react"
 import type { Venue } from "@prisma/client"
 
 export function VenueList({ initialVenues }: { initialVenues: Venue[] }) {
@@ -49,6 +49,18 @@ export function VenueList({ initialVenues }: { initialVenues: Venue[] }) {
     if (!res.ok) { toast.error("更新失敗"); return }
     setVenues((prev) => prev.map((v) => v.id === id ? { ...v, isActive: !current } : v))
     toast.success(!current ? "已啟用" : "已停用")
+  }
+
+  async function handleDelete(id: string, name: string) {
+    if (!confirm(`確定刪除場地「${name}」？`)) return
+    const res = await fetch(`/api/admin/venues/${id}`, { method: "DELETE" })
+    if (!res.ok) {
+      const { error } = await res.json().catch(() => ({}))
+      toast.error(error ?? "刪除失敗")
+      return
+    }
+    setVenues((prev) => prev.filter((v) => v.id !== id))
+    toast.success("已刪除")
   }
 
   return (
@@ -111,6 +123,14 @@ export function VenueList({ initialVenues }: { initialVenues: Venue[] }) {
                 >
                   {venue.isActive ? "啟用" : "停用"}
                 </Badge>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(venue.id, venue.name)}
+                  className="p-1.5 rounded-md text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  title="刪除場地"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
                 <Link href={`/admin/venues/${venue.id}`} className="text-zinc-400 hover:text-zinc-600">
                   <ChevronRight className="w-4 h-4" />
                 </Link>
