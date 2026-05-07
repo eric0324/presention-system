@@ -4,20 +4,19 @@ After=network.target
 
 [Service]
 Type=simple
-User=www-data
+User=root
 WorkingDirectory=/var/www/presentation-system
-# standalone 模式輸出在 .next/standalone
-ExecStart=/usr/bin/node .next/standalone/server.js
+ExecStart=/root/.bun/bin/bun run start
+KillSignal=SIGINT
+TimeoutStopSec=15
 Restart=always
 RestartSec=5
 
-# 環境變數（或改用 EnvironmentFile 讀取 .env）
 EnvironmentFile=/var/www/presentation-system/.env
 Environment=NODE_ENV=production
 Environment=PORT=3000
 Environment=HOSTNAME=0.0.0.0
 
-# 資源限制
 LimitNOFILE=65536
 
 [Install]

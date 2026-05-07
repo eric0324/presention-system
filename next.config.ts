@@ -1,7 +1,6 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   images: {
     // 圖片透過 API proxy 取得，不需要 next/image 優化
     unoptimized: true,

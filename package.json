@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "rm -rf .next/standalone/.next/static .next/standalone/public && ln -s ../../.next/static .next/standalone/.next/static && ln -s ../../public .next/standalone/public",
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",
