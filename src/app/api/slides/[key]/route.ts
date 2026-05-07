@@ -1,5 +1,5 @@
 import { db } from "@/lib/db"
-import { presignS3Url } from "@/lib/s3"
+import { signCloudfrontUrl } from "@/lib/cloudfront"
 import { isSessionActive } from "@/lib/time"
 import { NextResponse } from "next/server"
 
@@ -21,6 +21,6 @@ export async function GET(
     return NextResponse.json({ error: "場次不在進行中" }, { status: 403 })
   }
 
-  const signedUrl = await presignS3Url(slide.s3Key, 60)
+  const signedUrl = signCloudfrontUrl(slide.s3Key, 60)
   return NextResponse.redirect(signedUrl, { status: 302 })
 }

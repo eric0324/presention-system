@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { presignS3Url } from "@/lib/s3"
+import { signCloudfrontUrl } from "@/lib/cloudfront"
 import { NextResponse } from "next/server"
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -11,6 +11,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const slide = await db.slide.findUnique({ where: { id } })
   if (!slide) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
-  const signedUrl = await presignS3Url(slide.s3Key, 300)
+  const signedUrl = signCloudfrontUrl(slide.s3Key, 300)
   return NextResponse.redirect(signedUrl, { status: 302 })
 }
