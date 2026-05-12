@@ -41,7 +41,7 @@ export function AnnouncementBanner() {
   if (!enabled || !content) return null
 
   return (
-    <div className="w-full bg-violet-600 text-white text-sm px-4 py-2 text-center shrink-0">
+    <div className="w-full text-white text-sm px-4 py-2 text-center shrink-0" style={{ backgroundColor: "#004ef9" }}>
       {content}
     </div>
   )
