@@ -2,6 +2,9 @@
 # 部署腳本：在 VPS 上執行
 set -e
 
+# 確保 bun 在 PATH 中（sudo／非互動 shell 不會載入 ~/.bashrc）
+export PATH="/root/.bun/bin:$HOME/.bun/bin:$PATH"
+
 APP_DIR="/var/www/presentation-system"
 SERVICE="presentation-system"
 
