@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { uploadToS3 } from "@/lib/s3"
 import { emitBroadcast } from "@/lib/broadcast"
+import { createSlidesInOrder } from "@/lib/slideOrdering"
 import { NextResponse } from "next/server"
 import { randomUUID } from "crypto"
 
@@ -29,20 +30,17 @@ export async function POST(req: Request) {
   }
 
   const existing = await db.slide.findMany({ where: { sessionId }, orderBy: { order: "asc" } })
-  let nextOrder = existing.length
 
-  const created = await Promise.all(
-    files.map(async (file) => {
-      const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg"
-      const s3Key = `slides/${sessionId}/${randomUUID()}.${ext}`
-      const buffer = Buffer.from(await file.arrayBuffer())
-      await uploadToS3(s3Key, buffer, file.type)
-      const slide = await db.slide.create({
-        data: { sessionId, s3Key, order: nextOrder++ },
-      })
-      return slide
+  // order 依選檔順序（陣列索引）決定，不可依上傳完成時序，否則重整後順序會亂掉
+  const created = await createSlidesInOrder(files, existing.length, async (file, order) => {
+    const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg"
+    const s3Key = `slides/${sessionId}/${randomUUID()}.${ext}`
+    const buffer = Buffer.from(await file.arrayBuffer())
+    await uploadToS3(s3Key, buffer, file.type)
+    return db.slide.create({
+      data: { sessionId, s3Key, order },
     })
-  )
+  })
 
   emitBroadcast(sessionId, { type: "slides_updated" })
   return NextResponse.json(created, { status: 201 })
