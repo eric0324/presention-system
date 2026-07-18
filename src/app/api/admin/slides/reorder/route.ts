@@ -18,7 +18,8 @@ export async function PATCH(req: Request) {
 
   const { ids } = parsed.data
 
-  const [firstSlide] = await Promise.all(
+  // 用單一 transaction 原子性更新，避免部分失敗留下重複／不連續的 order
+  const [firstSlide] = await db.$transaction(
     ids.map((id, index) =>
       db.slide.update({ where: { id }, data: { order: index } })
     )
